@@ -1,0 +1,9 @@
+name: yzj
+label: YZJ Robot
+version: "1.0"
+description: >
+  云之家 (YunZhiJia) intelligent bot via WebSocket long-connection.
+  Configured via config.yaml yzj: section. Supports multiple accounts.
+kind: platform
+apply_yaml_config_fn: apply_yaml_config
+cron_deliver_env_var: YZJ_CRON_TARGET
