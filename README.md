@@ -35,7 +35,13 @@ HERMES_HOME=/path/to/hermes-data bash install.sh
 
 ### 安装后配置
 
-安装完成后，编辑 `~/.hermes/config.yaml`，在 `yzj:` 节填写凭据（见下方配置说明），然后重启 Hermes：
+安装完成后，运行配置向导：
+
+```bash
+hermes gateway setup
+```
+
+在菜单中选择 **🤖 YZJ Robot**，按引导输入凭据（支持 App API 模式和旧版 Webhook 模式二选一）。配置完成后重启 gateway 生效：
 
 ```bash
 hermes gateway restart
@@ -62,9 +68,35 @@ hermes gateway restart
 | `app_id` + `app_secret` | WebSocket + accessToken | App API | 新版应用机器人 |
 | `send_msg_url`（含 yzjtoken）| WebSocket + yzjtoken | Webhook | 旧版群机器人 |
 
-### 配置示例
+### 配置方式
 
-**单账户 · App API 模式：**
+#### 方式一：hermes gateway setup（推荐）
+
+运行 `hermes gateway setup`，选择 🤖 YZJ Robot，按向导提示输入凭据。凭据会保存到 `~/.hermes/.env`。
+
+#### 方式二：环境变量
+
+在 `~/.hermes/.env` 中直接设置：
+
+**App API 模式：**
+
+```env
+YZJ_APP_ID=your_app_id
+YZJ_APP_SECRET=your_app_secret
+# 可选
+YZJ_ENDPOINT=https://yunzhijia.com
+YZJ_HOME_CHANNEL=default@group:your_group_id
+```
+
+**旧版 Webhook 模式：**
+
+```env
+YZJ_SEND_MSG_URL=https://www.yunzhijia.com/gateway/robot/send?yzjtoken=xxx
+```
+
+#### 方式三：config.yaml（多账户场景）
+
+单账户 · App API 模式：
 
 ```yaml
 yzj:
@@ -74,14 +106,14 @@ yzj:
   timeout: 10                       # 可选，默认 10 秒
 ```
 
-**单账户 · 旧版机器人模式：**
+单账户 · 旧版机器人模式：
 
 ```yaml
 yzj:
   send_msg_url: https://www.yunzhijia.com/gateway/robot/send?yzjtoken=xxx
 ```
 
-**多账户混合模式：**
+多账户混合模式：
 
 ```yaml
 yzj:
@@ -105,3 +137,4 @@ yzj:
 ### 图片发送
 
 App API 模式下，插件会先将图片上传到云之家文件服务，再以 `msgType=23` 发送。如果上传失败，自动降级为发送图片 URL 文本。
+

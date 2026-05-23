@@ -60,6 +60,46 @@ cp "$SRC_DIR/adapter.py"  "$PLUGIN_DIR/"
 cp "$SRC_DIR/plugin.yaml" "$PLUGIN_DIR/"
 echo "  ✓ 插件文件已安装到 $PLUGIN_DIR"
 
+# ── 启用插件 ──────────────────────────────────────────────────────────────────
+echo "▶ 启用插件..."
+if command -v hermes &>/dev/null; then
+  hermes plugins enable hermes-yzj
+  echo "  ✓ 插件已启用（hermes plugins enable hermes-yzj）"
+else
+  # hermes 不在 PATH，直接写入 config.yaml
+  CONFIG_FILE="$HERMES_HOME/config.yaml"
+  if [ -f "$CONFIG_FILE" ]; then
+    python3 - "$CONFIG_FILE" <<'PYEOF'
+import sys, re
+path = sys.argv[1]
+text = open(path).read()
+# 已包含 hermes-yzj 则跳过
+if re.search(r'^\s*-\s*hermes-yzj\s*$', text, re.MULTILINE):
+    print("  ✓ plugins.enabled 已包含 hermes-yzj")
+    sys.exit(0)
+if re.search(r'^plugins:', text, re.MULTILINE):
+    if re.search(r'^\s*enabled:', text, re.MULTILINE):
+        text = re.sub(
+            r'(  enabled:\s*\n)((?:  - .*\n)*)',
+            lambda m: m.group(0) + '  - hermes-yzj\n',
+            text, count=1, flags=re.MULTILINE
+        )
+    else:
+        text = re.sub(r'^(plugins:\s*\n)', r'\1  enabled:\n  - hermes-yzj\n', text, count=1, flags=re.MULTILINE)
+else:
+    text += '\nplugins:\n  enabled:\n  - hermes-yzj\n'
+open(path, 'w').write(text)
+print("  ✓ hermes-yzj 已加入 plugins.enabled（config.yaml）")
+PYEOF
+  else
+    echo "  ⚠ 未找到 config.yaml，请运行 hermes 至少一次后重新执行此脚本，"
+    echo "    或手动在 $HERMES_HOME/config.yaml 中添加："
+    echo "      plugins:"
+    echo "        enabled:"
+    echo "          - hermes-yzj"
+  fi
+fi
+
 # ── 完成 ──────────────────────────────────────────────────────────────────────
 echo ""
 echo "================================================"
