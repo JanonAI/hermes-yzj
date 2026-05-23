@@ -1,9 +1,34 @@
-name: yzj
+name: hermes-yzj
 label: YZJ Robot
 version: "1.0"
 description: >
   云之家 (YunZhiJia) intelligent bot via WebSocket long-connection.
-  Configured via config.yaml yzj: section. Supports multiple accounts.
+  Configured via config.yaml yzj: section or environment variables.
+  App API mode: set YZJ_APP_ID + YZJ_APP_SECRET.
+  Legacy mode: set YZJ_SEND_MSG_URL (webhook URL containing yzjtoken).
 kind: platform
 apply_yaml_config_fn: apply_yaml_config
 cron_deliver_env_var: YZJ_CRON_TARGET
+optional_env:
+  - name: YZJ_APP_ID
+    description: "云之家应用 ID（App API 模式；与 YZJ_APP_SECRET 配合使用）"
+    prompt: "YZJ App ID"
+    url: "https://yunzhijia.com/"
+    password: false
+  - name: YZJ_APP_SECRET
+    description: "云之家应用密钥（App API 模式；与 YZJ_APP_ID 配合使用）"
+    prompt: "YZJ App Secret"
+    url: "https://yunzhijia.com/"
+    password: true
+  - name: YZJ_SEND_MSG_URL
+    description: "云之家机器人 SendMsg URL，含 yzjtoken（Legacy 模式；与 App API 模式二选一）"
+    prompt: "YZJ SendMsg URL (includes ?yzjtoken=...)"
+    password: true
+  - name: YZJ_ENDPOINT
+    description: "云之家接入端点（可选，默认 https://yunzhijia.com）"
+    prompt: "YZJ endpoint (leave blank for default)"
+    password: false
+  - name: YZJ_HOME_CHANNEL
+    description: "cron 默认投递目标 channel，格式 {account}@group:{groupId}"
+    prompt: "Home channel for cron delivery (e.g. default@group:abc123)"
+    password: false
