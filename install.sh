@@ -47,11 +47,13 @@ echo "  ✓ 下载完成"
 echo "▶ 解压..."
 tar -xzf "$TMP_DIR/hermes-yzj.tar.gz" -C "$TMP_DIR"
 # GitHub 归档解压后目录名为 hermes-yzj-main
-SRC_DIR="$TMP_DIR/hermes-yzj-main"
-if [ ! -d "$SRC_DIR" ]; then
+EXTRACT_DIR="$TMP_DIR/hermes-yzj-main"
+if [ ! -d "$EXTRACT_DIR" ]; then
   # 兼容其他分支/tag 命名（取第一个子目录）
-  SRC_DIR="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -1)"
+  EXTRACT_DIR="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -1)"
 fi
+# 插件源文件位于归档根目录下的 hermes-yzj/ 子目录
+SRC_DIR="$EXTRACT_DIR/hermes-yzj"
 echo "  ✓ 解压完成"
 
 # ── 安装插件文件（覆盖已有版本） ──────────────────────────────────────────────
