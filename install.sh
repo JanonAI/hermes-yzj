@@ -154,18 +154,18 @@ PYEOF
     echo "    [2] app_id + app_secret（新版 App API）"
     echo ""
 
-    # 交互式输入（非 TTY 时跳过）
-    if [ -t 0 ]; then
-      read -rp "  是否现在输入凭据？[y/N] " REPLY
+    # 交互式输入（从 /dev/tty 读取，兼容 curl | bash）
+    if [ -e /dev/tty ]; then
+      read -rp "  是否现在输入凭据？[y/N] " REPLY </dev/tty
       if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
         echo ""
         echo "  选择凭据模式："
         echo "    [1] send_msg_url（旧版）"
         echo "    [2] app_id + app_secret（新版 App API）"
-        read -rp "  请输入 [1/2]: " MODE
+        read -rp "  请输入 [1/2]: " MODE </dev/tty
         case "$MODE" in
           1)
-            read -rp "  请输入 send_msg_url: " INPUT_URL
+            read -rp "  请输入 send_msg_url: " INPUT_URL </dev/tty
             if [ -n "$INPUT_URL" ]; then
               python3 - "$CONFIG_FILE" "$INPUT_URL" <<'PYEOF'
 import sys, re
@@ -182,8 +182,8 @@ PYEOF
             fi
             ;;
           2)
-            read -rp "  请输入 app_id: " INPUT_APP_ID
-            read -rp "  请输入 app_secret: " INPUT_APP_SECRET
+            read -rp "  请输入 app_id: " INPUT_APP_ID </dev/tty
+            read -rp "  请输入 app_secret: " INPUT_APP_SECRET </dev/tty
             if [ -n "$INPUT_APP_ID" ] && [ -n "$INPUT_APP_SECRET" ]; then
               python3 - "$CONFIG_FILE" "$INPUT_APP_ID" "$INPUT_APP_SECRET" <<'PYEOF'
 import sys, re
